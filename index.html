@@ -1,0 +1,596 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Training Luis Quirós · Mis programas</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f3ef;color:#24313a;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.app{max-width:1100px;margin:auto;padding:14px 14px 105px}.hero,.toolbar,.card,.library{background:#fffdfb;border:1px solid #e7ded6;border-radius:20px}
+.hero{padding:20px;background:linear-gradient(135deg,#fffdfb,#f8eeea)}.brand{font-size:11px;letter-spacing:.18em;font-weight:800;color:#c98f78}h1{font-size:25px;margin:6px 0}.muted{color:#71808a;font-size:12px}
+button{border:0;border-radius:10px;padding:10px 12px;font-weight:750;font-size:11px;white-space:nowrap;background:#e3eadf;color:#66785f;cursor:pointer}
+button.primary{background:#66785f;color:white}button.terra{background:#f0ddd4;color:#8d5e4d}button.danger{background:#f7e5e5;color:#9b5151}
+.homebar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0}.homebar h2{margin:0}.programs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.program-card{background:#fffdfb;border:1px solid #e7ded6;border-radius:18px;padding:16px}.program-card h3{margin:0 0 5px;font-size:17px}.program-card .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:13px}
+.empty{text-align:center;padding:45px 15px;color:#71808a}.meta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}.field label{display:block;font-size:9px;color:#71808a;font-weight:800;margin:0 0 4px 3px}
+input{width:100%;border:1px solid #e7ded6;border-radius:10px;padding:10px;background:white;color:#24313a;font:inherit;font-size:13px}
+.toolbar{padding:10px;margin:12px 0;display:flex;gap:7px;overflow:auto;position:sticky;top:6px;z-index:10;box-shadow:0 5px 20px #0000000c}
+.weektabs,.daytabs{display:flex;gap:7px;overflow:auto;margin:12px 0}.weektab.active,.daytab.active{background:#66785f;color:white}.weekbar{background:#fffdfb;border:1px solid #e7ded6;border-radius:16px;padding:10px;margin:12px 0}.weeklabel{font-size:9px;font-weight:800;color:#71808a;letter-spacing:.12em;margin-bottom:6px}.daytop{display:flex;gap:8px;align-items:center;margin:16px 0 9px}.daytop input{font-size:18px;font-weight:800}
+.block{background:#fffdfb;border:1px solid #e7ded6;border-radius:18px;overflow:hidden;margin:10px 0}.block.mob{border-color:#d5dfd0}.blockhead{display:flex;gap:8px;align-items:center;padding:10px;background:linear-gradient(90deg,#f0ddd4,#fff)}.mob .blockhead{background:linear-gradient(90deg,#e3eadf,#fff)}
+.blockhead input{font-weight:800;background:transparent;border:0;padding:4px}.blockhead .actions{display:flex;gap:4px;margin-left:auto}.exercise{padding:10px;border-top:1px solid #e7ded6}.grid{display:grid;grid-template-columns:1.3fr .45fr .8fr .65fr .8fr 1.2fr;gap:6px}.grid .video{grid-column:1/-1}
+.exactions{display:flex;justify-content:flex-end;gap:5px;margin-top:7px}.addrow{padding:10px}.bottom{position:fixed;bottom:0;left:0;right:0;background:#fffdfbf2;border-top:1px solid #e7ded6;padding:9px 14px calc(9px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:8px;z-index:20}
+.toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);background:#24313a;color:white;padding:9px 14px;border-radius:20px;font-size:11px;display:none;z-index:30}
+#editorView{display:none}.back{margin-bottom:10px}
+@media(max-width:720px){.programs{grid-template-columns:1fr}.meta{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.grid .name,.grid .cue,.grid .video{grid-column:1/-1}.daytop{align-items:flex-start;flex-direction:column}.daytop input{font-size:16px}}
+
+.modebar{display:flex;gap:8px;margin:12px 0}
+.modebar button.active{background:#66785f;color:#fff}
+#progressView{display:none}
+.progress-layout{display:grid;grid-template-columns:260px 1fr;gap:12px}
+.progress-side,.progress-main{background:#fffdfb;border:1px solid #e7ded6;border-radius:18px;padding:14px}
+.progress-side h3,.progress-main h3{margin:0 0 10px}
+.metric-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.metric-list button{text-align:left;width:100%}
+.metric-list button.active{background:#66785f;color:#fff}
+.progress-form{display:grid;grid-template-columns:1fr .7fr .55fr .7fr 1.4fr;gap:8px;margin:12px 0}
+.progress-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.pstat{background:#f6f3ef;border-radius:13px;padding:12px}.pstat small{display:block;color:#71808a;font-size:9px;font-weight:800}.pstat b{font-size:17px}
+.chartbox{border:1px solid #e7ded6;border-radius:15px;padding:8px;margin:12px 0;overflow:hidden}
+#progressChart{width:100%;height:auto;display:block}
+.progress-table{width:100%;border-collapse:collapse;font-size:11px}.progress-table th,.progress-table td{padding:8px;border-bottom:1px solid #e7ded6;text-align:left}.progress-table th{color:#71808a;font-size:9px}
+@media(max-width:720px){.progress-layout{grid-template-columns:1fr}.progress-form{grid-template-columns:1fr 1fr}.progress-form .pnote{grid-column:1/-1}.progress-stats{grid-template-columns:1fr}}
+
+.terra,.danger,.toolbar .terra,.toolbar .danger{
+  background:#c98f78!important;
+  border-color:#c98f78!important;
+  color:#24313a!important;
+}
+.terra:hover,.danger:hover,.toolbar .terra:hover,.toolbar .danger:hover{
+  background:#b97f69!important;
+  border-color:#b97f69!important;
+}
+
+/* IDENTIDAD TRAINING LUIS QUIRÓS — VERDE + TERRACOTA VIVO */
+:root{
+  --brand-green:#5f7652;
+  --brand-green-light:#cbd8c4;
+  --brand-terra:#d7795f;
+  --brand-terra-light:#f1c7b9;
+  --brand-black:#111111;
+}
+
+/* Black typography throughout */
+body,body *{color:var(--brand-black)}
+.muted,.hint,label,.field label,.progress-table th{color:var(--brand-black)!important}
+
+/* Main green actions */
+.primary,
+.modebar button.active,
+.metric-list button.active,
+.week-tab.active,
+.daytab.active{
+  background:var(--brand-green)!important;
+  border-color:var(--brand-green)!important;
+  color:#fff!important;
+}
+.primary *, .modebar button.active *, .metric-list button.active *{color:#fff!important}
+
+/* Secondary/add actions in visible green */
+.toolbar button:not(.danger):not(.terra),
+#progressView button:not(.danger):not(.primary),
+.add{
+  background:var(--brand-green-light)!important;
+  border-color:#8fa485!important;
+  color:var(--brand-black)!important;
+}
+
+/* Terracotta actions */
+.terra,.danger,
+.toolbar .terra,.toolbar .danger{
+  background:var(--brand-terra)!important;
+  border-color:var(--brand-terra)!important;
+  color:var(--brand-black)!important;
+}
+.terra:hover,.danger:hover,.toolbar .terra:hover,.toolbar .danger:hover{
+  background:#c9674e!important;
+}
+
+/* Make alternating accents unmistakably terracotta */
+.toolbar button:first-child,
+.toolbar button:nth-child(3),
+.blockhead,
+.badge.terra{
+  background:var(--brand-terra-light)!important;
+  border-color:var(--brand-terra)!important;
+  color:var(--brand-black)!important;
+}
+
+/* Inputs/cards stay neutral so green and terracotta stand out */
+input,textarea,select{
+  color:var(--brand-black)!important;
+}
+
+/* PALETA DEFINITIVA: VERDE + TERRACOTA QUEMADO */
+:root{
+  --green:#607A52;
+  --green-soft:#AFC49F;
+  --terra:#C65F3D;
+  --terra-soft:#E59A7F;
+  --black:#000000;
+}
+body,body *{color:#000!important}
+
+/* Active / primary */
+.primary,.modebar button.active,.metric-list button.active,
+.week-tab.active,.daytab.active,.weekbtn.active,.daybtn.active{
+ background:#607A52!important;border-color:#607A52!important;color:#fff!important
+}
+.primary *,.modebar button.active *,.metric-list button.active *,
+.week-tab.active *,.daytab.active *,.weekbtn.active *,.daybtn.active *{color:#fff!important}
+
+/* Green family */
+button.add,.add,.toolbar button:nth-child(even){
+ background:#AFC49F!important;border-color:#607A52!important;color:#000!important
+}
+
+/* Terracotta family — saturated, not pink */
+.terra,.danger,.toolbar .terra,.toolbar .danger,
+.toolbar button:nth-child(odd),.blockhead{
+ background:#C65F3D!important;border-color:#A7472C!important;color:#000!important
+}
+
+/* Hover */
+.terra:hover,.danger:hover,.toolbar button:nth-child(odd):hover{
+ background:#B44E30!important
+}
+button.add:hover,.toolbar button:nth-child(even):hover{
+ background:#9FB890!important
+}
+
+/* Remove any pale rose feel from badges/cards */
+.badge.terra{background:#C65F3D!important;border-color:#A7472C!important;color:#000!important}
+input,textarea,select{color:#000!important}
+
+
+/* Reordenamiento por arrastre — editor de escritorio */
+.block[draggable="true"], .exercise[draggable="true"]{position:relative}
+.draghandle{cursor:grab;user-select:none;font-weight:900;border:1px solid #607A52!important;background:#AFC49F!important;color:#000!important;min-width:38px}
+.draghandle:active{cursor:grabbing}
+.block.dragging,.exercise.dragging{opacity:.45;outline:2px dashed #C65F3D}
+.block.dragover,.exercise.dragover{box-shadow:0 -4px 0 #C65F3D}
+
+.weektab[draggable="true"],.daytab[draggable="true"]{cursor:grab}
+.weektab.dragging,.daytab.dragging{opacity:.45}
+.weektab.dragover,.daytab.dragover{outline:3px solid #C65F3D;outline-offset:2px}
+
+.daytabwrap{display:inline-flex;align-items:center;gap:3px;border-radius:12px;padding:2px;cursor:grab}
+.daytabwrap.active{outline:2px solid #607A52}
+.daytabwrap.dragging{opacity:.45}
+.daytabwrap.dragover{outline:3px solid #C65F3D;outline-offset:2px}
+.daymove{min-width:30px;padding:8px 6px;border-radius:9px;font-weight:900}
+.daymove:disabled{opacity:.25;cursor:not-allowed}
+</style></head><body><main class="app">
+<section id="homeView">
+<section class="hero"><div class="brand">CREADOR DE PROGRAMAS</div><h1>TRAINING LUIS QUIRÓS</h1><div class="muted">Crea, guarda y administra los programas de tus clientes desde un solo lugar.</div></section>
+<div class="homebar"><div><h2>Mis programas</h2><div class="muted" id="count"></div></div><button class="primary" onclick="newProgram()">＋ Nuevo programa</button></div>
+<div id="programs" class="programs"></div>
+</section>
+<section id="editorView">
+<button class="back" onclick="goHome()">← Mis programas</button>
+<section class="hero"><div class="brand">EDITANDO PROGRAMA</div><h1>TRAINING LUIS QUIRÓS</h1><div class="muted">Los cambios se guardan en este navegador.</div>
+<div class="meta"><div class="field"><label>CLIENTE</label><input id="client"></div><div class="field"><label>OBJETIVO</label><input id="objective"></div><div class="field"><label>PROGRAMA</label><input id="program"></div><div class="field"><label>FRECUENCIA</label><input id="frequency"></div><div class="field"><label>INICIO</label><input id="start"></div><div class="field"><label>OBSERVACIÓN GENERAL</label><input id="note"></div></div></section>
+<div class="modebar"><button id="programModeBtn" class="active" onclick="setMode('program')">🏋🏻 PROGRAMA</button><button id="progressModeBtn" onclick="setMode('progress')">📈 PROGRESO</button></div>
+<div id="programView">
+<section class="toolbar"><button class="terra" onclick="addWeek()">＋ Semana</button><button onclick="duplicateWeek()">⧉ Duplicar semana</button><button class="danger" onclick="deleteWeek()">Eliminar semana</button><button onclick="addDay()">＋ Día</button><button onclick="addBlock('mobility')">＋ Movilidad</button><button onclick="addBlock('normal')">＋ Bloque</button><button onclick="duplicateDay()">⧉ Duplicar día</button><button class="danger" onclick="deleteDay()">Eliminar día</button></section>
+<div class="weekbar"><div class="weeklabel">SELECCIONA LA SEMANA</div><div id="weektabs" class="weektabs"></div></div>
+<div id="tabs" class="daytabs"></div><section id="editor"></section>
+</div>
+<div id="progressView">
+  <div class="progress-layout">
+    <aside class="progress-side">
+      <h3>Ejercicios</h3>
+      <div class="muted">Base de datos de progreso de este cliente.</div>
+      <button class="primary" style="margin-top:10px;width:100%" onclick="addMetric()">＋ Nuevo ejercicio</button>
+      <div id="metricList" class="metric-list"></div>
+    </aside>
+    <section class="progress-main">
+      <div id="progressEmpty" class="empty">Crea o selecciona un ejercicio para comenzar.</div>
+      <div id="progressEditor" style="display:none">
+        <div class="field"><label>EJERCICIO</label><input id="metricName" oninput="renameMetric(this.value)"></div>
+        <div class="progress-form">
+          <div class="field"><label>FECHA</label><input id="logDate" type="date"></div>
+          <div class="field"><label>CARGA</label><input id="logLoad" type="number" step="0.1" placeholder="Ej. 100"></div>
+          <div class="field"><label>UNIDAD</label><select id="logUnit"><option value="lb">lb</option><option value="kg">kg</option></select></div>
+          <div class="field"><label>REPETICIONES</label><input id="logReps" type="number" step="1" placeholder="Ej. 8"></div>
+          <div class="field pnote"><label>NOTA</label><input id="logNote" placeholder="Opcional"></div>
+        </div>
+        <button class="primary" onclick="addProgressLog()">Guardar registro</button>
+        <div class="progress-stats">
+          <div class="pstat"><small>ÚLTIMO</small><b id="statLast">—</b></div>
+          <div class="pstat"><small>MEJOR CARGA</small><b id="statBest">—</b></div>
+          <div class="pstat"><small>MEJOR 1RM EST.</small><b id="stat1rm">—</b></div>
+        </div>
+        <div class="chartbox">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 6px 8px">
+  <div><b style="font-size:12px">EVOLUCIÓN DEL EJERCICIO</b><div class="muted">Compara carga y repeticiones por fecha.</div></div>
+  <div style="display:flex;gap:6px">
+    <button id="chartLoadBtn" class="primary" onclick="setChartMode('load')">Carga</button>
+    <button id="chartRepsBtn" onclick="setChartMode('reps')">Repeticiones</button>
+  </div>
+</div>
+<canvas id="progressChart" width="760" height="320"></canvas>
+</div>
+        <div style="overflow:auto"><table class="progress-table"><thead><tr><th>Fecha</th><th>Carga</th><th>Reps</th><th>1RM est.</th><th>Nota</th><th></th></tr></thead><tbody id="progressHistory"></tbody></table></div>
+        <button class="danger" style="margin-top:12px" onclick="deleteMetric()">Eliminar ejercicio</button>
+      </div>
+    </section>
+  </div>
+</div>
+</section></main>
+<div class="bottom" id="bottom" style="display:none"><button class="primary" onclick="saveProgram()">💾 Guardar programa</button><button class="terra" onclick="downloadClient()">↗ Generar archivo cliente</button></div><div class="toast" id="toast"></div>
+<script>
+const ORIGINAL={"client": "Mónica Darnitsyne", "objective": "Masa muscular + postura", "program": "Programa inicial", "frequency": "5 días / semana", "start": "14 sep 2026", "note": "Hazle caso a Luis.", "days": [{"title": "DÍA 1 · FUERZA — SENTADILLA + PECHO", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "MÉTODO DE FUERZA", "type": "normal", "exercises": [{"name": "Sentadilla · secuencia", "sets": "1", "reps": "3×5 lb → 1×15 lb → 2×10 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "Buena técnica.", "video": ""}, {"name": "Sentadilla", "sets": "3", "reps": "5 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "Controlar el movimiento.", "video": "https://youtu.be/okUCXiGCESA?si=j9EloVCIcXgqFUQz"}]}, {"title": "HIPERTROFIA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Press de pecho", "sets": "3", "reps": "10 reps", "intensity": "RIR 2", "rest": "Por sensaciones", "cue": "Seguido del press cerrado.", "video": ""}, {"name": "Press cerrado con KB", "sets": "3", "reps": "8 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}]}, {"title": "FINAL", "type": "normal", "exercises": [{"name": "Sentadilla isométrica", "sets": "3", "reps": "20–30 s", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}]}]}, {"title": "DÍA 2 · PESO MUERTO + HOMBRO + CARDIO", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "FUERZA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Peso muerto con KB", "sets": "3", "reps": "8 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}, {"name": "Curl martillo + press de hombro", "sets": "3", "reps": "12 reps", "intensity": "—", "rest": "Por sensaciones", "cue": "1 rep = curl martillo + press completo.", "video": ""}]}, {"title": "CARDIO", "type": "normal", "exercises": [{"name": "Escaladora", "sets": "—", "reps": "Libre", "intensity": "Libre", "rest": "Por sensaciones", "cue": "", "video": ""}]}]}, {"title": "DÍA 3 · CORE + CONTROL PÉLVICO + POSTURA", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "CONTROL PÉLVICO · 3 RONDAS", "type": "normal", "exercises": [{"name": "Retroversión pélvica en suelo", "sets": "3", "reps": "10 reps · pausa 3 s", "intensity": "Control", "rest": "Por sensaciones", "cue": "Retroversión consciente.", "video": ""}, {"name": "Dead bug", "sets": "3", "reps": "8 por lado", "intensity": "Control", "rest": "Por sensaciones", "cue": "Control lumbar.", "video": ""}, {"name": "Elevación pélvica", "sets": "3", "reps": "10 reps · pausa 3 s", "intensity": "Control", "rest": "Por sensaciones", "cue": "Buena posición de pelvis.", "video": ""}]}, {"title": "MOVILIDAD + POSTURA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Estiramiento iliopsoas en desplante + posterior pelvic tilt", "sets": "3", "reps": "30 s por lado", "intensity": "Control", "rest": "Por sensaciones", "cue": "Mantener retroversión durante el estiramiento.", "video": ""}, {"name": "Plancha de Isi + respiración", "sets": "3", "reps": "5 respiraciones", "intensity": "Control", "rest": "Por sensaciones", "cue": "Controlar pelvis y caja torácica.", "video": ""}]}, {"title": "CUELLO + POSTURA", "type": "normal", "exercises": [{"name": "Chin tucks", "sets": "3", "reps": "8–10 reps · 5 s", "intensity": "Suave", "rest": "Por sensaciones", "cue": "Controlado.", "video": ""}, {"name": "Isométrico cervical frontal y laterales", "sets": "3", "reps": "15–20 s / dirección", "intensity": "Suave", "rest": "Por sensaciones", "cue": "Sin forzar.", "video": ""}, {"name": "Wall slides", "sets": "3", "reps": "10–12 reps", "intensity": "Control", "rest": "Por sensaciones", "cue": "Priorizar postura.", "video": ""}]}]}, {"title": "DÍA 4 · REPITE DÍA 1", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "MÉTODO DE FUERZA", "type": "normal", "exercises": [{"name": "Sentadilla · secuencia", "sets": "1", "reps": "3×5 lb → 1×15 lb → 2×10 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "Buena técnica.", "video": ""}, {"name": "Sentadilla", "sets": "3", "reps": "5 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "Controlar el movimiento.", "video": "https://youtu.be/okUCXiGCESA?si=j9EloVCIcXgqFUQz"}]}, {"title": "HIPERTROFIA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Press de pecho", "sets": "3", "reps": "10 reps", "intensity": "RIR 2", "rest": "Por sensaciones", "cue": "Seguido del press cerrado.", "video": ""}, {"name": "Press cerrado con KB", "sets": "3", "reps": "8 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}]}, {"title": "FINAL", "type": "normal", "exercises": [{"name": "Sentadilla isométrica", "sets": "3", "reps": "20–30 s", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}]}]}, {"title": "DÍA 5 · REPITE DÍA 2", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "FUERZA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Peso muerto con KB", "sets": "3", "reps": "8 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}, {"name": "Curl martillo + press de hombro", "sets": "3", "reps": "12 reps", "intensity": "—", "rest": "Por sensaciones", "cue": "1 rep = curl martillo + press completo.", "video": ""}]}, {"title": "CARDIO", "type": "normal", "exercises": [{"name": "Escaladora", "sets": "—", "reps": "Libre", "intensity": "Libre", "rest": "Por sensaciones", "cue": "", "video": ""}]}]}]};
+const KEY='tlq_programs_v2';
+let programs=[], data=null, currentWeek=0, current=0, editingId=null, selectedMetric=0, currentMode='program', chartMode='load';
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function blankProgram(){return{id:uid(),client:'Cliente nuevo',objective:'',program:'Programa inicial',frequency:'',start:'',note:'',progress:[],weeks:[{title:'SEMANA 1',days:[{title:'DÍA 1',blocks:[{title:'MOVILIDAD ACTIVA · INICIO',type:'mobility',exercises:[blankEx()]}]}]}],updated:Date.now()}}
+function normalizeProgram(p){
+ if(!p.weeks){p.weeks=[{title:'SEMANA 1',days:p.days||[]}];delete p.days}
+ if(!p.weeks.length)p.weeks=[{title:'SEMANA 1',days:[]}];if(!Array.isArray(p.progress))p.progress=[];
+ p.weeks.forEach((w,i)=>{if(!w.title)w.title='SEMANA '+(i+1);if(!Array.isArray(w.days))w.days=[]});
+ return p
+}
+function week(){return data.weeks[currentWeek]}
+function days(){return week().days}
+function loadLibrary(){
+ try{programs=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){programs=[]}
+ programs=programs.map(normalizeProgram);
+ if(!programs.length){
+   let legacy=null; try{legacy=JSON.parse(localStorage.getItem('tlq_program')||'null')}catch(e){}
+   let m=normalizeProgram(legacy||clone(ORIGINAL)); m.id=uid(); m.updated=Date.now(); programs=[m]; persist();
+ }
+ renderHome();
+}
+function persist(){localStorage.setItem(KEY,JSON.stringify(programs))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',1600)}
+function renderHome(){
+ document.getElementById('homeView').style.display='block';document.getElementById('editorView').style.display='none';document.getElementById('bottom').style.display='none';
+ document.getElementById('count').textContent=programs.length+' programa'+(programs.length===1?'':'s')+' guardado'+(programs.length===1?'':'s');
+ let p=document.getElementById('programs');
+ if(!programs.length){p.innerHTML='<div class="empty">Todavía no tienes programas.<br><br><button class="primary" onclick="newProgram()">＋ Crear primer programa</button></div>';return}
+ p.innerHTML=programs.slice().sort((a,b)=>(b.updated||0)-(a.updated||0)).map(x=>`<article class="program-card"><div class="brand">${esc(x.program||'PROGRAMA')}</div><h3>${esc(x.client||'Sin nombre')}</h3><div class="muted">${esc(x.objective||'Sin objetivo')} · ${x.weeks?.length||0} semana(s)</div><div class="actions"><button class="primary" onclick="openProgram('${x.id}')">Abrir</button><button onclick="duplicateProgram('${x.id}')">Duplicar</button><button class="danger" onclick="deleteProgram('${x.id}')">Eliminar</button></div></article>`).join('');
+}
+function newProgram(){data=blankProgram();editingId=data.id;currentWeek=0;current=0;showEditor()}
+function openProgram(id){let x=programs.find(p=>p.id===id);if(!x)return;data=normalizeProgram(clone(x));editingId=id;currentWeek=0;current=0;showEditor()}
+function duplicateProgram(id){let x=programs.find(p=>p.id===id);if(!x)return;let y=clone(x);y.id=uid();y.client=(y.client||'Cliente')+' · copia';y.updated=Date.now();programs.push(y);persist();renderHome();toast('Programa duplicado')}
+function deleteProgram(id){let x=programs.find(p=>p.id===id);if(!x||!confirm('¿Eliminar el programa de '+(x.client||'este cliente')+'?'))return;programs=programs.filter(p=>p.id!==id);persist();renderHome()}
+function goHome(){if(data&&confirm('¿Guardar los cambios antes de volver?'))saveProgram(false);data=null;editingId=null;renderHome()}
+function showEditor(){document.getElementById('homeView').style.display='none';document.getElementById('editorView').style.display='block';document.getElementById('bottom').style.display='flex';initMeta();render();setMode('program')}
+function syncMeta(){['client','objective','program','frequency','start','note'].forEach(k=>data[k]=document.getElementById(k).value)}
+function initMeta(){['client','objective','program','frequency','start','note'].forEach(k=>document.getElementById(k).value=data[k]||'')}
+function saveProgram(show=true){syncMeta();data.id=editingId||data.id||uid();data.updated=Date.now();editingId=data.id;let i=programs.findIndex(p=>p.id===data.id);if(i>=0)programs[i]=clone(data);else programs.push(clone(data));persist();if(show)toast('Programa guardado')}
+
+function setMode(mode){
+ currentMode=mode;
+ document.getElementById('programView').style.display=mode==='program'?'block':'none';
+ document.getElementById('progressView').style.display=mode==='progress'?'block':'none';
+ document.getElementById('programModeBtn').classList.toggle('active',mode==='program');
+ document.getElementById('progressModeBtn').classList.toggle('active',mode==='progress');
+ renderProgress();
+}
+function addMetric(){
+ if(!Array.isArray(data.progress))data.progress=[];
+ data.progress.push({id:uid(),name:'Nuevo ejercicio',logs:[]});
+ selectedMetric=data.progress.length-1;saveProgram(false);renderProgress();
+ setTimeout(()=>{let x=document.getElementById('metricName');if(x){x.focus();x.select()}},0)
+}
+function renameMetric(v){
+ if(!data.progress?.[selectedMetric])return;
+ data.progress[selectedMetric].name=v;saveProgram(false);renderMetricList()
+}
+function deleteMetric(){
+ let m=data.progress?.[selectedMetric];if(!m||!confirm('¿Eliminar '+(m.name||'este ejercicio')+' y todo su historial?'))return;
+ data.progress.splice(selectedMetric,1);selectedMetric=Math.max(0,selectedMetric-1);saveProgram(false);renderProgress()
+}
+function renderMetricList(){
+ let box=document.getElementById('metricList');if(!box||!data)return;
+ let arr=data.progress||[];
+ box.innerHTML=arr.map((m,i)=>`<button class="${i===selectedMetric?'active':''}" onclick="selectedMetric=${i};renderProgress()">${esc(m.name||'Sin nombre')}</button>`).join('')
+}
+function addProgressLog(){
+ let m=data.progress?.[selectedMetric];if(!m)return;
+ let date=document.getElementById('logDate').value,load=parseFloat(document.getElementById('logLoad').value),unit=document.getElementById('logUnit').value,reps=parseInt(document.getElementById('logReps').value),note=document.getElementById('logNote').value.trim();
+ if(!date||!Number.isFinite(load)){toast('Completa fecha y carga');return}
+ if(!Number.isFinite(reps)||reps<1)reps=1;
+ m.logs.push({id:uid(),date,load,unit,reps,note});m.logs.sort((a,b)=>a.date.localeCompare(b.date));
+ saveProgram(false);renderProgress();toast('Registro guardado')
+}
+function deleteProgressLog(id){
+ let m=data.progress?.[selectedMetric];if(!m)return;
+ m.logs=m.logs.filter(x=>x.id!==id);saveProgram(false);renderProgress()
+}
+function oneRM(x){return x.load*(1+x.reps/30)}
+function num(x){return Number.isFinite(x)?(Math.round(x*10)/10).toString():'—'}
+function renderProgress(){
+ if(!data)return;
+ if(!Array.isArray(data.progress))data.progress=[];
+ if(selectedMetric>=data.progress.length)selectedMetric=Math.max(0,data.progress.length-1);
+ renderMetricList();
+ let empty=document.getElementById('progressEmpty'),editor=document.getElementById('progressEditor'),m=data.progress[selectedMetric];
+ if(!m){empty.style.display='block';editor.style.display='none';return}
+ empty.style.display='none';editor.style.display='block';
+ document.getElementById('metricName').value=m.name||'';
+ let d=document.getElementById('logDate');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
+ document.getElementById('logLoad').value='';document.getElementById('logReps').value='';document.getElementById('logNote').value='';
+ let logs=m.logs||[],last=logs[logs.length-1],best=logs.length?Math.max(...logs.map(x=>x.load)):null,best1=logs.length?Math.max(...logs.map(oneRM)):null;
+ let u=last?.unit||'lb';
+ document.getElementById('statLast').textContent=last?`${num(last.load)} ${u} × ${last.reps}`:'—';
+ document.getElementById('statBest').textContent=best!==null?`${num(best)} ${u}`:'—';
+ document.getElementById('stat1rm').textContent=best1!==null?`${num(best1)} ${u}`:'—';
+ document.getElementById('progressHistory').innerHTML=[...logs].reverse().map(x=>`<tr><td>${esc(x.date)}</td><td>${num(x.load)} ${x.unit||'lb'}</td><td>${x.reps}</td><td>${num(oneRM(x))} ${x.unit||'lb'}</td><td>${esc(x.note||'—')}</td><td><button class="danger" onclick="deleteProgressLog('${x.id}')">×</button></td></tr>`).join('');
+ drawProgressChart(logs)
+}
+function setChartMode(mode){
+ chartMode=mode;
+ let a=document.getElementById('chartLoadBtn'),b=document.getElementById('chartRepsBtn');
+ if(a)a.classList.toggle('primary',mode==='load');
+ if(b)b.classList.toggle('primary',mode==='reps');
+ let m=data.progress?.[selectedMetric];if(m)drawProgressChart(m.logs||[])
+}
+function drawProgressChart(logs){
+ let c=document.getElementById('progressChart');if(!c)return;let g=c.getContext('2d'),W=c.width,H=c.height;g.clearRect(0,0,W,H);
+ let a=document.getElementById('chartLoadBtn'),b=document.getElementById('chartRepsBtn');if(a)a.classList.toggle('primary',chartMode==='load');if(b)b.classList.toggle('primary',chartMode==='reps');
+ if(!logs.length){g.fillStyle='#71808a';g.font='14px Arial';g.textAlign='center';g.fillText('Agrega registros para ver la gráfica',W/2,H/2);return}
+ let L=64,R=28,T=35,B=55,iw=W-L-R,ih=H-T-B;
+ let vals=logs.map(x=>chartMode==='load'?x.load:x.reps),mn=Math.min(...vals),mx=Math.max(...vals);
+ let pad=Math.max((mx-mn)*.18, chartMode==='load'?2:1);mn=Math.max(0,mn-pad);mx+=pad;
+ // grid + readable Y labels
+ g.font='11px Arial';g.textAlign='right';g.textBaseline='middle';
+ for(let i=0;i<5;i++){
+   let y=T+ih*i/4,val=mx-(mx-mn)*i/4;
+   g.strokeStyle='#e7ded6';g.lineWidth=1;g.beginPath();g.moveTo(L,y);g.lineTo(W-R,y);g.stroke();
+   g.fillStyle='#71808a';g.fillText(num(val),L-9,y)
+ }
+ let pts=logs.map((d,i)=>{let v=chartMode==='load'?d.load:d.reps;return{x:L+(logs.length===1?iw/2:iw*i/(logs.length-1)),y:T+(mx-v)/(mx-mn||1)*ih,d,v}});
+ g.strokeStyle='#66785f';g.lineWidth=3;g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.stroke();
+ // points + value labels
+ pts.forEach(p=>{
+   g.fillStyle='#c98f78';g.beginPath();g.arc(p.x,p.y,6,0,Math.PI*2);g.fill();
+   g.fillStyle='#24313a';g.font='bold 11px Arial';g.textAlign='center';g.textBaseline='bottom';
+   let unit=chartMode==='load'?' '+(p.d.unit||'lb'):' reps';
+   g.fillText(num(p.v)+unit,p.x,p.y-9)
+ });
+ // dates
+ g.fillStyle='#71808a';g.font='11px Arial';g.textAlign='center';g.textBaseline='top';
+ pts.forEach(p=>g.fillText(p.d.date.slice(5),p.x,H-B+16));
+ // axis title
+ g.save();g.translate(15,T+ih/2);g.rotate(-Math.PI/2);g.textAlign='center';g.fillStyle='#66785f';g.font='bold 11px Arial';
+ g.fillText(chartMode==='load'?'CARGA':'REPETICIONES',0,0);g.restore()
+}
+function render(){
+ let wt=document.getElementById('weektabs'),tabs=document.getElementById('tabs'),ed=document.getElementById('editor');
+ wt.innerHTML=data.weeks.map((w,i)=>`<button class="weektab ${i===currentWeek?'active':''}" draggable="true" title="Arrastra para cambiar el orden" onclick="currentWeek=${i};current=0;render()" ondragstart="dragWeekStart(event,${i})" ondragover="dragWeekOver(event,${i})" ondragleave="event.currentTarget.classList.remove('dragover')" ondrop="dropWeek(event,${i})" ondragend="clearWeekDayDrag()">${esc(w.title||('SEMANA '+(i+1)))}</button>`).join('');
+ let ds=days();
+ tabs.innerHTML=ds.map((d,i)=>`<div class="daytabwrap ${i===current?'active':''}" draggable="true" title="Arrastra para cambiar el orden" ondragstart="dragDayStart(event,${i})" ondragover="dragDayOver(event,${i})" ondragleave="event.currentTarget.classList.remove('dragover')" ondrop="dropDay(event,${i})" ondragend="clearWeekDayDrag()"><button class="daymove" onclick="event.stopPropagation();moveDay(${i},-1)" ${i===0?'disabled':''}>←</button><button class="daytab ${i===current?'active':''}" onclick="current=${i};render()">☰ DÍA ${i+1}</button><button class="daymove" onclick="event.stopPropagation();moveDay(${i},1)" ${i===ds.length-1?'disabled':''}>→</button></div>`).join('');
+ if(!ds.length){ed.innerHTML='<div class="empty">Esta semana todavía no tiene días.<br><br><button onclick="addDay()">＋ Agregar día</button></div>';return}
+ let d=ds[current];
+ ed.innerHTML=`<div class="daytop"><input value="${esc(d.title)}" oninput="days()[current].title=this.value"></div>`+d.blocks.map((b,bi)=>blockHTML(b,bi)).join('')
+}
+function blockHTML(b,bi){return `<div class="block ${b.type==='mobility'?'mob':''}" draggable="true" data-block="${bi}" ondragstart="dragBlockStart(event,${bi})" ondragover="dragBlockOver(event,${bi})" ondragleave="event.currentTarget.classList.remove('dragover')" ondrop="dropBlock(event,${bi})" ondragend="clearDragStyles()"><div class="blockhead"><button class="draghandle" title="Arrastrar bloque" onmousedown="event.currentTarget.closest('.block').setAttribute('draggable','true')">☰</button><input value="${esc(b.title)}" oninput="days()[current].blocks[${bi}].title=this.value"><div class="actions"><button onclick="moveBlock(${bi},-1)">↑</button><button onclick="moveBlock(${bi},1)">↓</button><button onclick="addExercise(${bi})">＋ Ej.</button><button class="danger" onclick="deleteBlock(${bi})">×</button></div></div>${b.exercises.map((e,ei)=>exerciseHTML(e,bi,ei)).join('')}<div class="addrow"><button onclick="addExercise(${bi})">＋ Agregar ejercicio</button></div></div>`}
+function exerciseHTML(e,bi,ei){let f=(key,label,cls='')=>`<div class="field ${cls}"><label>${label}</label><input value="${esc(e[key])}" oninput="days()[current].blocks[${bi}].exercises[${ei}].${key}=this.value"></div>`;return `<div class="exercise" draggable="true" data-bi="${bi}" data-ei="${ei}" ondragstart="dragExerciseStart(event,${bi},${ei})" ondragover="dragExerciseOver(event,${bi},${ei})" ondragleave="event.currentTarget.classList.remove('dragover')" ondrop="dropExercise(event,${bi},${ei})" ondragend="clearDragStyles()"><div class="grid">${f('name','EJERCICIO','name')}${f('sets','SERIES')}${f('reps','REPS / TIEMPO / CARGA')}${f('intensity','RIR / RPE / INTENSIDAD')}${f('rest','DESCANSO')}${f('cue','INDICACIÓN','cue')}${f('video','VIDEO YOUTUBE','video')}</div><div class="exactions"><button class="draghandle" title="Arrastrar ejercicio">☰</button><button onclick="moveExercise(${bi},${ei},-1)">↑</button><button onclick="moveExercise(${bi},${ei},1)">↓</button><button class="danger" onclick="deleteExercise(${bi},${ei})">Quitar</button></div></div>`}
+function blankEx(){return{name:'',sets:'',reps:'',intensity:'',rest:'',cue:'',video:''}}
+
+let dragWeekIndex=null, dragDayIndex=null;
+function clearWeekDayDrag(){
+ document.querySelectorAll('.weektab.dragging,.weektab.dragover,.daytabwrap.dragging,.daytabwrap.dragover,.daytab.dragging,.daytab.dragover').forEach(el=>el.classList.remove('dragging','dragover'));
+ dragWeekIndex=null;dragDayIndex=null
+}
+function renumberWeeks(){
+ data.weeks.forEach((w,i)=>{if(!w.title||/^SEMANA\s+\d+$/i.test(w.title.trim()))w.title='SEMANA '+(i+1)})
+}
+function renumberDays(arr){
+ arr.forEach((d,i)=>{
+   if(!d.title)return d.title='DÍA '+(i+1);
+   if(/^DÍA\s+\d+$/i.test(d.title.trim()))d.title='DÍA '+(i+1);
+   else d.title=d.title.replace(/^DÍA\s+\d+(\s*·\s*)?/i,'DÍA '+(i+1)+' · ')
+ })
+}
+function dragWeekStart(ev,i){dragWeekIndex=i;ev.currentTarget.classList.add('dragging');ev.dataTransfer.effectAllowed='move';ev.dataTransfer.setData('text/plain','week:'+i)}
+function dragWeekOver(ev,i){if(dragWeekIndex===null)return;ev.preventDefault();ev.currentTarget.classList.add('dragover');ev.dataTransfer.dropEffect='move'}
+function dropWeek(ev,to){
+ if(dragWeekIndex===null)return;ev.preventDefault();
+ let from=dragWeekIndex,[item]=data.weeks.splice(from,1);
+ if(from<to)to--;
+ data.weeks.splice(to,0,item);currentWeek=to;current=0;renumberWeeks();clearWeekDayDrag();render()
+}
+function moveDay(i,dir){
+ let a=days(),n=i+dir;if(n<0||n>=a.length)return;
+ [a[i],a[n]]=[a[n],a[i]];current=n;renumberDays(a);render()
+}
+function dragDayStart(ev,i){dragDayIndex=i;ev.currentTarget.classList.add('dragging');ev.dataTransfer.effectAllowed='move';ev.dataTransfer.setData('text/plain','day:'+i)}
+function dragDayOver(ev,i){if(dragDayIndex===null)return;ev.preventDefault();ev.currentTarget.classList.add('dragover');ev.dataTransfer.dropEffect='move'}
+function dropDay(ev,to){
+ if(dragDayIndex===null)return;ev.preventDefault();
+ let a=days(),from=dragDayIndex,[item]=a.splice(from,1);
+ if(from<to)to--;
+ a.splice(to,0,item);current=to;renumberDays(a);clearWeekDayDrag();render()
+}
+
+let dragBlockIndex=null, dragExerciseInfo=null;
+function clearDragStyles(){document.querySelectorAll('.dragging,.dragover').forEach(el=>el.classList.remove('dragging','dragover'));dragBlockIndex=null;dragExerciseInfo=null}
+function moveBlock(bi,dir){let a=days()[current].blocks,n=bi+dir;if(n<0||n>=a.length)return;[a[bi],a[n]]=[a[n],a[bi]];render()}
+function dragBlockStart(ev,bi){dragBlockIndex=bi;ev.currentTarget.classList.add('dragging');ev.dataTransfer.effectAllowed='move';ev.dataTransfer.setData('text/plain','block:'+bi)}
+function dragBlockOver(ev,bi){if(dragBlockIndex===null)return;ev.preventDefault();ev.stopPropagation();ev.currentTarget.classList.add('dragover');ev.dataTransfer.dropEffect='move'}
+function dropBlock(ev,to){if(dragBlockIndex===null)return;ev.preventDefault();ev.stopPropagation();let a=days()[current].blocks,from=dragBlockIndex;if(from!==to){let [item]=a.splice(from,1);a.splice(to,0,item)}clearDragStyles();render()}
+function dragExerciseStart(ev,bi,ei){ev.stopPropagation();dragExerciseInfo={bi,ei};ev.currentTarget.classList.add('dragging');ev.dataTransfer.effectAllowed='move';ev.dataTransfer.setData('text/plain','exercise:'+bi+':'+ei)}
+function dragExerciseOver(ev,bi,ei){if(!dragExerciseInfo)return;ev.preventDefault();ev.stopPropagation();ev.currentTarget.classList.add('dragover');ev.dataTransfer.dropEffect='move'}
+function dropExercise(ev,toBi,toEi){if(!dragExerciseInfo)return;ev.preventDefault();ev.stopPropagation();let {bi:fromBi,ei:fromEi}=dragExerciseInfo;let source=days()[current].blocks[fromBi].exercises;let [item]=source.splice(fromEi,1);let target=days()[current].blocks[toBi].exercises;if(fromBi===toBi&&fromEi<toEi)toEi--;target.splice(toEi,0,item);clearDragStyles();render()}
+
+function addExercise(bi){days()[current].blocks[bi].exercises.push(blankEx());render()}
+function deleteExercise(bi,ei){days()[current].blocks[bi].exercises.splice(ei,1);render()}
+function moveExercise(bi,ei,dir){let a=days()[current].blocks[bi].exercises,n=ei+dir;if(n<0||n>=a.length)return;[a[ei],a[n]]=[a[n],a[ei]];render()}
+function addBlock(type){if(!days().length)addDay();days()[current].blocks.push({title:type==='mobility'?'MOVILIDAD ACTIVA · INICIO':'NUEVO BLOQUE',type,exercises:[blankEx()]});render()}
+function deleteBlock(bi){days()[current].blocks.splice(bi,1);render()}
+function addDay(){days().push({title:`DÍA ${days().length+1}`,blocks:[]});current=days().length-1;render()}
+function duplicateDay(){if(!days().length)return;let c=clone(days()[current]);c.title=`DÍA ${days().length+1} · ${c.title.replace(/^DÍA\s*\d+\s*·?\s*/i,'')}`;days().splice(current+1,0,c);current++;render()}
+function deleteDay(){if(!days().length||!confirm('¿Eliminar este día?'))return;days().splice(current,1);current=Math.max(0,Math.min(current,days().length-1));render()}
+function addWeek(){
+ let mode=confirm('¿Quieres DUPLICAR la semana actual?\n\nAceptar = duplicar semana actual\nCancelar = crear semana en blanco');
+ let w=mode?clone(week()):{title:'',days:[]};
+ w.title='SEMANA '+(data.weeks.length+1);
+ data.weeks.splice(currentWeek+1,0,w);currentWeek++;current=0;render();toast(mode?'Semana duplicada':'Semana nueva creada')
+}
+function duplicateWeek(){let w=clone(week());w.title='SEMANA '+(data.weeks.length+1);data.weeks.splice(currentWeek+1,0,w);currentWeek++;current=0;render();toast('Semana duplicada')}
+function deleteWeek(){if(data.weeks.length===1){alert('El programa debe conservar al menos una semana.');return}if(!confirm('¿Eliminar esta semana completa?'))return;data.weeks.splice(currentWeek,1);currentWeek=Math.max(0,Math.min(currentWeek,data.weeks.length-1));current=0;render()}
+function clientHTML(){
+ syncMeta();
+ let selectors=[], weekTabs=[], panels=[], rules=[];
+ data.weeks.forEach((w,wi)=>{
+   selectors.push(`<input class="sel" type="radio" name="week" id="w${wi}" ${wi===0?'checked':''}>`);
+   weekTabs.push(`<label class="tab weektabc" for="w${wi}">${esc(w.title||('SEMANA '+(wi+1)))}</label>`);
+   rules.push(`#w${wi}:checked~.nav label[for=w${wi}]{background:#c98f78;color:white}`,`#w${wi}:checked~.program .wp${wi}{display:block}`);
+   let daySelectors=[], dayTabs=[], dayPanels=[];
+   w.days.forEach((d,di)=>{
+     daySelectors.push(`<input class="sel" type="radio" name="day${wi}" id="w${wi}d${di}" ${di===0?'checked':''}>`);
+     dayTabs.push(`<label class="tab" for="w${wi}d${di}">DÍA ${di+1}</label>`);
+     rules.push(`#w${wi}d${di}:checked~.daysnav label[for=w${wi}d${di}]{background:#66785f;color:white}`,`#w${wi}d${di}:checked~.daypanels .dp${wi}_${di}{display:block}`);
+     let bs=d.blocks.map(b=>`<div class="block ${b.type==='mobility'?'mob':''}"><div class="bh">${esc(b.title)}</div><div class="ex head"><div>Ejercicio</div><div>Series</div><div>Reps / carga</div><div>Intensidad</div><div>Descanso</div><div>Indicación</div><div>Video</div></div>`+b.exercises.filter(e=>Object.values(e).some(v=>String(v).trim())).map(e=>`<div class="ex"><div class="wide" data-l="EJERCICIO">${esc(e.name)}</div><div data-l="SERIES">${esc(e.sets)}</div><div data-l="REPS / CARGA">${esc(e.reps)}</div><div data-l="INTENSIDAD">${esc(e.intensity)}</div><div data-l="DESCANSO">${esc(e.rest)}</div><div class="wide" data-l="INDICACIÓN">${esc(e.cue)}</div><div class="wide vid" data-l="VIDEO">${e.video?`<a href="${esc(e.video)}" target="_blank">▶ VER VIDEO</a>`:''}</div></div>`).join('')+`</div>`).join('');
+     dayPanels.push(`<div class="daypanel dp${wi}_${di}"><div class="dayhead"><h2>${esc(d.title)}</h2></div>${bs}</div>`);
+   });
+   panels.push(`<section class="weekpanel wp${wi}">${daySelectors.join('')}<div class="daysnav"><div class="sectionlabel">SELECCIONA TU DÍA</div><div class="tabs">${dayTabs.join('')}</div></div><div class="daypanels">${dayPanels.join('')}</div></section>`);
+ });
+ const css=`*{box-sizing:border-box}body{margin:0;background:#f6f3ef;font-family:Arial;color:#24313a}.app{max-width:1000px;margin:auto;padding:14px}.hero,.nav,.block,.note,.daysnav{background:#fffdfb;border:1px solid #e7ded6;border-radius:20px}.hero{padding:22px;background:linear-gradient(135deg,#fffdfb,#f8eeea)}.brand{font-size:11px;letter-spacing:.2em;font-weight:bold;color:#c98f78}h1{margin:6px 0}.sub{color:#71808a;font-size:13px}.info{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:8px;margin-top:16px}.cell{border:1px solid #e7ded6;border-radius:11px;padding:9px}.cell small{display:block;color:#71808a;font-size:9px;margin-bottom:4px}.sel{position:absolute;left:-9999px}.nav{margin:14px 0;padding:14px}.tabs{display:flex;gap:7px;overflow:auto;margin-top:8px}.tab{padding:10px 13px;background:#eee7df;border-radius:11px;font-size:11px;font-weight:bold;white-space:nowrap}.weekpanel,.daypanel{display:none}.daysnav{padding:12px;margin-bottom:12px}.sectionlabel{font-size:9px;font-weight:bold;color:#71808a;letter-spacing:.1em}.dayhead{margin:18px 2px 9px}.dayhead h2{font-size:21px}.block{overflow:hidden;margin:10px 0}.bh{padding:12px 14px;background:linear-gradient(90deg,#f0ddd4,#fff);font-size:12px;font-weight:bold}.mob .bh{background:linear-gradient(90deg,#e3eadf,#fff);color:#66785f}.ex{display:grid;grid-template-columns:1.4fr .5fr .9fr .7fr .8fr 1.3fr 1fr;border-top:1px solid #e7ded6}.ex>div{padding:9px 7px;border-right:1px solid #e7ded6;font-size:11px}.ex>div:last-child{border:0}.head{color:#71808a;font-size:9px}.vid a{color:#66785f;text-decoration:none;font-weight:bold}.note{padding:14px;margin-top:13px}.footer{text-align:center;color:#9aa4aa;font-size:9px;margin-top:18px}@media(max-width:700px){.info{grid-template-columns:1fr 1fr}.info .cell:first-child{grid-column:1/-1}.ex{grid-template-columns:1fr 1fr}.ex.head{display:none}.ex>div:before{content:attr(data-l);display:block;font-size:8px;color:#71808a;font-weight:bold}.ex .wide{grid-column:1/-1}}${rules.join('')}`;
+ const meta=(lab,val)=>`<div class="cell"><small>${lab}</small><b>${esc(val)}</b></div>`;
+ return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(data.client)} — Training Luis Quirós</title><style>${css}
+.modebar{display:flex;gap:8px;margin:12px 0}
+.modebar button.active{background:#66785f;color:#fff}
+#progressView{display:none}
+.progress-layout{display:grid;grid-template-columns:260px 1fr;gap:12px}
+.progress-side,.progress-main{background:#fffdfb;border:1px solid #e7ded6;border-radius:18px;padding:14px}
+.progress-side h3,.progress-main h3{margin:0 0 10px}
+.metric-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.metric-list button{text-align:left;width:100%}
+.metric-list button.active{background:#66785f;color:#fff}
+.progress-form{display:grid;grid-template-columns:1fr .7fr .55fr .7fr 1.4fr;gap:8px;margin:12px 0}
+.progress-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.pstat{background:#f6f3ef;border-radius:13px;padding:12px}.pstat small{display:block;color:#71808a;font-size:9px;font-weight:800}.pstat b{font-size:17px}
+.chartbox{border:1px solid #e7ded6;border-radius:15px;padding:8px;margin:12px 0;overflow:hidden}
+#progressChart{width:100%;height:auto;display:block}
+.progress-table{width:100%;border-collapse:collapse;font-size:11px}.progress-table th,.progress-table td{padding:8px;border-bottom:1px solid #e7ded6;text-align:left}.progress-table th{color:#71808a;font-size:9px}
+@media(max-width:720px){.progress-layout{grid-template-columns:1fr}.progress-form{grid-template-columns:1fr 1fr}.progress-form .pnote{grid-column:1/-1}.progress-stats{grid-template-columns:1fr}}
+
+.terra,.danger,.toolbar .terra,.toolbar .danger{
+  background:#c98f78!important;
+  border-color:#c98f78!important;
+  color:#24313a!important;
+}
+.terra:hover,.danger:hover,.toolbar .terra:hover,.toolbar .danger:hover{
+  background:#b97f69!important;
+  border-color:#b97f69!important;
+}
+
+/* IDENTIDAD TRAINING LUIS QUIRÓS — VERDE + TERRACOTA VIVO */
+:root{
+  --brand-green:#5f7652;
+  --brand-green-light:#cbd8c4;
+  --brand-terra:#d7795f;
+  --brand-terra-light:#f1c7b9;
+  --brand-black:#111111;
+}
+
+/* Black typography throughout */
+body,body *{color:var(--brand-black)}
+.muted,.hint,label,.field label,.progress-table th{color:var(--brand-black)!important}
+
+/* Main green actions */
+.primary,
+.modebar button.active,
+.metric-list button.active,
+.week-tab.active,
+.daytab.active{
+  background:var(--brand-green)!important;
+  border-color:var(--brand-green)!important;
+  color:#fff!important;
+}
+.primary *, .modebar button.active *, .metric-list button.active *{color:#fff!important}
+
+/* Secondary/add actions in visible green */
+.toolbar button:not(.danger):not(.terra),
+#progressView button:not(.danger):not(.primary),
+.add{
+  background:var(--brand-green-light)!important;
+  border-color:#8fa485!important;
+  color:var(--brand-black)!important;
+}
+
+/* Terracotta actions */
+.terra,.danger,
+.toolbar .terra,.toolbar .danger{
+  background:var(--brand-terra)!important;
+  border-color:var(--brand-terra)!important;
+  color:var(--brand-black)!important;
+}
+.terra:hover,.danger:hover,.toolbar .terra:hover,.toolbar .danger:hover{
+  background:#c9674e!important;
+}
+
+/* Make alternating accents unmistakably terracotta */
+.toolbar button:first-child,
+.toolbar button:nth-child(3),
+.blockhead,
+.badge.terra{
+  background:var(--brand-terra-light)!important;
+  border-color:var(--brand-terra)!important;
+  color:var(--brand-black)!important;
+}
+
+/* Inputs/cards stay neutral so green and terracotta stand out */
+input,textarea,select{
+  color:var(--brand-black)!important;
+}
+
+/* PALETA DEFINITIVA: VERDE + TERRACOTA QUEMADO */
+:root{
+  --green:#607A52;
+  --green-soft:#AFC49F;
+  --terra:#C65F3D;
+  --terra-soft:#E59A7F;
+  --black:#000000;
+}
+body,body *{color:#000!important}
+
+/* Active / primary */
+.primary,.modebar button.active,.metric-list button.active,
+.week-tab.active,.daytab.active,.weekbtn.active,.daybtn.active{
+ background:#607A52!important;border-color:#607A52!important;color:#fff!important
+}
+.primary *,.modebar button.active *,.metric-list button.active *,
+.week-tab.active *,.daytab.active *,.weekbtn.active *,.daybtn.active *{color:#fff!important}
+
+/* Green family */
+button.add,.add,.toolbar button:nth-child(even){
+ background:#AFC49F!important;border-color:#607A52!important;color:#000!important
+}
+
+/* Terracotta family — saturated, not pink */
+.terra,.danger,.toolbar .terra,.toolbar .danger,
+.toolbar button:nth-child(odd),.blockhead{
+ background:#C65F3D!important;border-color:#A7472C!important;color:#000!important
+}
+
+/* Hover */
+.terra:hover,.danger:hover,.toolbar button:nth-child(odd):hover{
+ background:#B44E30!important
+}
+button.add:hover,.toolbar button:nth-child(even):hover{
+ background:#9FB890!important
+}
+
+/* Remove any pale rose feel from badges/cards */
+.badge.terra{background:#C65F3D!important;border-color:#A7472C!important;color:#000!important}
+input,textarea,select{color:#000!important}
+
+</style></head><body><main class="app"><section class="hero"><div class="brand">PROGRAMA PERSONALIZADO</div><h1>TRAINING LUIS QUIRÓS</h1><div class="sub">${esc(data.program)} · ${esc(data.objective)}</div><div class="info">${meta('CLIENTE',data.client)}${meta('OBJETIVO',data.objective)}${meta('PROGRAMA',data.program)}${meta('FRECUENCIA',data.frequency)}${meta('INICIO',data.start)}</div></section>${selectors.join('')}<section class="nav"><div class="sectionlabel">SELECCIONA TU SEMANA</div><div class="tabs">${weekTabs.join('')}</div><div class="note"><b>Observación general:</b> ${esc(data.note)}</div></section><section class="program">${panels.join('')}</section><div class="footer">TRAINING LUIS QUIRÓS</div></main></body></html>`
+}
+function downloadClient(){saveProgram(false);let blob=new Blob([clientHTML()],{type:'text/html;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(data.client||'Cliente').replace(/[^\p{L}\p{N}]+/gu,'_')+'_Training_Luis_Quiros.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Archivo del cliente generado')}
+loadLibrary();
+</script></body></html>
