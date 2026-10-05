@@ -172,7 +172,41 @@ input,textarea,select{color:#000!important}
 .librarySearch{width:100%;padding:12px;border:2px solid #607A52;border-radius:12px;margin:8px 0 12px}
 .libraryResults{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px}
 .libraryCard{background:#fff;border:1px solid #d9d3ca;border-radius:14px;padding:12px}.libraryCard h4{margin:3px 0 8px}.libraryCard button{width:100%;margin-top:8px}
+
+/* ===== APP UNIFICADA · PROGRAMAS + BIBLIOTECA ===== */
+.mainnav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.mainnav button{flex:1;min-width:160px;padding:12px 14px;font-weight:900;border-radius:13px}
+.mainnav button.active{background:#607A52;color:#fff;border-color:#607A52}
+#libraryView{display:none}
+.libHero{background:#607A52;padding:22px;border-radius:22px;color:#fff;margin-bottom:14px}
+.libHero *{color:#fff}
+.libTop{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.libSearch,.libSelect{background:#fff;border:2px solid #607A52;border-radius:12px;padding:11px;color:#000}
+.libSearch{flex:1;min-width:230px}.libSelect{min-width:190px}
+.libFilters{display:flex;gap:7px;overflow:auto;padding-bottom:10px}
+.libChip{white-space:nowrap;border:1px solid #607A52;border-radius:999px;background:#fff;padding:8px 11px}
+.libChip.on{background:#607A52;color:#fff}
+.libGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.libCard{background:#fff;border:1px solid #d9d3ca;border-radius:18px;padding:15px}
+.libCard h3{margin:5px 0}.libStar{float:right;border:0;background:none;font-size:22px}
+.libTags{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+.libTag{background:#e3ebdf;border-radius:99px;padding:5px 8px;font-size:12px}
+.libTag.terra{background:#edb19b}
+.libActions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}.libActions>*{flex:1}
+.libModal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;z-index:12000}
+.libModal.show{display:flex}.libSheet{width:min(760px,100%);max-height:92vh;overflow:auto;background:#f6f3ef;border-radius:24px 24px 0 0;padding:20px}
+.libForm{display:grid;grid-template-columns:1fr 1fr;gap:10px}.libFull{grid-column:1/-1}
+.libSheet textarea{min-height:90px}
+.libSheetActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}.libSheetActions>*{flex:1}
+@media(max-width:600px){.libForm{grid-template-columns:1fr}.libFull{grid-column:auto}.mainnav button{min-width:0}}
+
 </style></head><body><main class="app">
+
+<div class="mainnav" id="mainnav">
+  <button id="navPrograms" class="active" onclick="showMainArea('programs')">🏋🏻 PROGRAMAS</button>
+  <button id="navLibrary" onclick="showMainArea('library')">📚 BIBLIOTECA</button>
+</div>
+
 <section id="homeView">
 <section class="hero"><div class="brand">CREADOR DE PROGRAMAS</div><h1>TRAINING LUIS QUIRÓS</h1><div class="muted">Crea, guarda y administra los programas de tus clientes desde un solo lugar.</div></section>
 <div class="homebar"><div><h2>Mis programas</h2><div class="muted" id="count"></div></div><button class="primary" onclick="newProgram()">＋ Nuevo programa</button></div>
@@ -229,7 +263,45 @@ input,textarea,select{color:#000!important}
     </section>
   </div>
 </div>
-</section></main>
+</section>
+
+<section id="libraryView">
+  <section class="libHero"><b>TRAINING LUIS QUIRÓS</b><h1 style="margin:4px 0">📚 Biblioteca de ejercicios</h1><div>Tu catálogo personal de ejercicios, videos e indicaciones técnicas. Todo queda disponible directamente dentro del programador.</div></section>
+  <div class="libTop">
+    <input id="libQ" class="libSearch" placeholder="🔎 Buscar ejercicio, músculo, equipo..." oninput="libRender()">
+    <button id="libFavBtn" onclick="libFavFilter()">☆ Favoritos</button>
+    <button class="terra" onclick="libOpenForm()">＋ Nuevo ejercicio</button>
+  </div>
+  <div id="libFilters" class="libFilters"></div>
+  <div class="libTop">
+    <select id="libEquipment" class="libSelect" onchange="libRender()"><option value="">Todo el equipo</option></select>
+    <select id="libCollection" class="libSelect" onchange="libRender()"><option value="">Todas las colecciones</option></select>
+    <button onclick="document.getElementById('libImportFile').click()">↙ Importar</button>
+    <button onclick="libBackup()">↗ Respaldo</button>
+    <input id="libImportFile" type="file" accept=".json,application/json" hidden onchange="libRestore(this.files[0])">
+  </div>
+  <div class="muted" style="margin:6px 0 12px"><b id="libCount"></b> · Biblioteca maestra conectada al programador</div>
+  <div id="libGrid" class="libGrid"></div>
+</section>
+
+<div id="libFormM" class="libModal"><div class="libSheet">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h2 id="libFT">Nuevo ejercicio</h2><button onclick="libClose('libFormM')">✕</button></div>
+  <div class="libForm">
+    <div class="field libFull"><label>NOMBRE *</label><input id="libName" placeholder="Sentadilla Goblet"></div>
+    <div class="field"><label>CATEGORÍA</label><input id="libCategory" placeholder="Pierna"></div>
+    <div class="field"><label>PATRÓN</label><input id="libPattern" placeholder="Sentadilla"></div>
+    <div class="field"><label>EQUIPO</label><input id="libEquipmentField" placeholder="Kettlebell"></div>
+    <div class="field"><label>MÚSCULO / OBJETIVO</label><input id="libTarget" placeholder="Cuádriceps · Glúteos"></div>
+    <div class="field libFull"><label>COLECCIONES</label><input id="libCollections" placeholder="Rodilla, Principiantes, Casa"><span class="muted">Sepáralas con comas.</span></div>
+    <div class="field libFull"><label>LINK DE YOUTUBE</label><input id="libVideo" placeholder="https://youtu.be/..."></div>
+    <div class="field libFull"><label>INDICACIONES TÉCNICAS</label><textarea id="libNotes" placeholder="Tus cues, errores frecuentes, ajustes..."></textarea></div>
+  </div>
+  <div class="libSheetActions"><button onclick="libClose('libFormM')">Cancelar</button><button class="primary" onclick="libSave()">Guardar ejercicio</button></div>
+</div></div>
+
+<div id="libDetailM" class="libModal"><div id="libDetail" class="libSheet"></div></div>
+
+</main>
 <div class="bottom" id="bottom" style="display:none"><button class="primary" onclick="saveProgram()">💾 Guardar programa</button><button class="terra" onclick="downloadClient()">↗ Generar archivo cliente</button></div><div class="toast" id="toast"></div>
 <div id="libraryPicker" class="libraryModal"><div class="librarySheet"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div><b style="color:#607A52">TRAINING LUIS QUIRÓS</b><h2 style="margin:3px 0">📚 Elegir de biblioteca</h2></div><button onclick="closeLibraryPicker()">✕</button></div><input id="librarySearch" class="librarySearch" placeholder="Buscar ejercicio, músculo, equipo..." oninput="renderLibraryPicker()"><div id="libraryResults" class="libraryResults"></div></div></div><script>
 const ORIGINAL={"client": "Mónica Darnitsyne", "objective": "Masa muscular + postura", "program": "Programa inicial", "frequency": "5 días / semana", "start": "14 sep 2026", "note": "Hazle caso a Luis.", "days": [{"title": "DÍA 1 · FUERZA — SENTADILLA + PECHO", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "MÉTODO DE FUERZA", "type": "normal", "exercises": [{"name": "Sentadilla · secuencia", "sets": "1", "reps": "3×5 lb → 1×15 lb → 2×10 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "Buena técnica.", "video": ""}, {"name": "Sentadilla", "sets": "3", "reps": "5 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "Controlar el movimiento.", "video": "https://youtu.be/okUCXiGCESA?si=j9EloVCIcXgqFUQz"}]}, {"title": "HIPERTROFIA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Press de pecho", "sets": "3", "reps": "10 reps", "intensity": "RIR 2", "rest": "Por sensaciones", "cue": "Seguido del press cerrado.", "video": ""}, {"name": "Press cerrado con KB", "sets": "3", "reps": "8 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}]}, {"title": "FINAL", "type": "normal", "exercises": [{"name": "Sentadilla isométrica", "sets": "3", "reps": "20–30 s", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}]}]}, {"title": "DÍA 2 · PESO MUERTO + HOMBRO + CARDIO", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "FUERZA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Peso muerto con KB", "sets": "3", "reps": "8 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}, {"name": "Curl martillo + press de hombro", "sets": "3", "reps": "12 reps", "intensity": "—", "rest": "Por sensaciones", "cue": "1 rep = curl martillo + press completo.", "video": ""}]}, {"title": "CARDIO", "type": "normal", "exercises": [{"name": "Escaladora", "sets": "—", "reps": "Libre", "intensity": "Libre", "rest": "Por sensaciones", "cue": "", "video": ""}]}]}, {"title": "DÍA 3 · CORE + CONTROL PÉLVICO + POSTURA", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "CONTROL PÉLVICO · 3 RONDAS", "type": "normal", "exercises": [{"name": "Retroversión pélvica en suelo", "sets": "3", "reps": "10 reps · pausa 3 s", "intensity": "Control", "rest": "Por sensaciones", "cue": "Retroversión consciente.", "video": ""}, {"name": "Dead bug", "sets": "3", "reps": "8 por lado", "intensity": "Control", "rest": "Por sensaciones", "cue": "Control lumbar.", "video": ""}, {"name": "Elevación pélvica", "sets": "3", "reps": "10 reps · pausa 3 s", "intensity": "Control", "rest": "Por sensaciones", "cue": "Buena posición de pelvis.", "video": ""}]}, {"title": "MOVILIDAD + POSTURA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Estiramiento iliopsoas en desplante + posterior pelvic tilt", "sets": "3", "reps": "30 s por lado", "intensity": "Control", "rest": "Por sensaciones", "cue": "Mantener retroversión durante el estiramiento.", "video": ""}, {"name": "Plancha de Isi + respiración", "sets": "3", "reps": "5 respiraciones", "intensity": "Control", "rest": "Por sensaciones", "cue": "Controlar pelvis y caja torácica.", "video": ""}]}, {"title": "CUELLO + POSTURA", "type": "normal", "exercises": [{"name": "Chin tucks", "sets": "3", "reps": "8–10 reps · 5 s", "intensity": "Suave", "rest": "Por sensaciones", "cue": "Controlado.", "video": ""}, {"name": "Isométrico cervical frontal y laterales", "sets": "3", "reps": "15–20 s / dirección", "intensity": "Suave", "rest": "Por sensaciones", "cue": "Sin forzar.", "video": ""}, {"name": "Wall slides", "sets": "3", "reps": "10–12 reps", "intensity": "Control", "rest": "Por sensaciones", "cue": "Priorizar postura.", "video": ""}]}]}, {"title": "DÍA 4 · REPITE DÍA 1", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "MÉTODO DE FUERZA", "type": "normal", "exercises": [{"name": "Sentadilla · secuencia", "sets": "1", "reps": "3×5 lb → 1×15 lb → 2×10 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "Buena técnica.", "video": ""}, {"name": "Sentadilla", "sets": "3", "reps": "5 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "Controlar el movimiento.", "video": "https://youtu.be/okUCXiGCESA?si=j9EloVCIcXgqFUQz"}]}, {"title": "HIPERTROFIA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Press de pecho", "sets": "3", "reps": "10 reps", "intensity": "RIR 2", "rest": "Por sensaciones", "cue": "Seguido del press cerrado.", "video": ""}, {"name": "Press cerrado con KB", "sets": "3", "reps": "8 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}]}, {"title": "FINAL", "type": "normal", "exercises": [{"name": "Sentadilla isométrica", "sets": "3", "reps": "20–30 s", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}]}]}, {"title": "DÍA 5 · REPITE DÍA 2", "blocks": [{"title": "MOVILIDAD ACTIVA · INICIO", "type": "mobility", "exercises": [{"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}, {"name": "", "sets": "", "reps": "", "intensity": "", "rest": "", "cue": "", "video": ""}]}, {"title": "FUERZA · 3 RONDAS", "type": "normal", "exercises": [{"name": "Peso muerto con KB", "sets": "3", "reps": "8 reps · 25 lb", "intensity": "—", "rest": "Por sensaciones", "cue": "", "video": ""}, {"name": "Curl martillo + press de hombro", "sets": "3", "reps": "12 reps", "intensity": "—", "rest": "Por sensaciones", "cue": "1 rep = curl martillo + press completo.", "video": ""}]}, {"title": "CARDIO", "type": "normal", "exercises": [{"name": "Escaladora", "sets": "—", "reps": "Libre", "intensity": "Libre", "rest": "Por sensaciones", "cue": "", "video": ""}]}]}]};
@@ -607,4 +679,70 @@ input,textarea,select{color:#000!important}
 }
 function downloadClient(){saveProgram(false);let blob=new Blob([clientHTML()],{type:'text/html;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(data.client||'Cliente').replace(/[^\p{L}\p{N}]+/gu,'_')+'_Training_Luis_Quiros.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Archivo del cliente generado')}
 loadLibrary();
+
+/* ===== BIBLIOTECA INTEGRADA ===== */
+const LIBKEY='tlq_exercise_library_v2', LIBOLD='tlq_exercise_library_v1';
+let libItems=[], libEdit=null, libCat='Todos', libFav=false;
+
+function libLoad(){
+  try{libItems=JSON.parse(localStorage.getItem(LIBKEY)||'null')}catch(e){libItems=null}
+  if(!Array.isArray(libItems)){
+    try{libItems=JSON.parse(localStorage.getItem(LIBOLD)||'[]')}catch(e){libItems=[]}
+    localStorage.setItem(LIBKEY,JSON.stringify(libItems))
+  }
+}
+function showMainArea(area){
+  const lib=area==='library';
+  document.getElementById('libraryView').style.display=lib?'block':'none';
+  document.getElementById('homeView').style.display=lib?'none':(data?'none':'block');
+  document.getElementById('editorView').style.display=lib?'none':(data?'block':'none');
+  document.getElementById('bottom').style.display=lib?'none':(data?'flex':'none');
+  document.getElementById('navPrograms').classList.toggle('active',!lib);
+  document.getElementById('navLibrary').classList.toggle('active',lib);
+  if(lib){libLoad();libRender()}
+}
+function libPersist(){localStorage.setItem(LIBKEY,JSON.stringify(libItems))}
+function libEsc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function libCats(){return ['Todos',...new Set(libItems.map(x=>x.category).filter(Boolean))]}
+function libUnique(field){return [...new Set(libItems.flatMap(x=>field==='collections'?(x.collections||[]):[x[field]]).filter(Boolean))].sort((a,b)=>a.localeCompare(b))}
+function libSetCat(x){libCat=x;libRender()}
+function libFavFilter(){libFav=!libFav;libRender()}
+function libRender(){
+  const F=document.getElementById('libFilters'), G=document.getElementById('libGrid'); if(!F||!G)return;
+  F.innerHTML=libCats().map(x=>`<button class="libChip ${libCat===x?'on':''}" onclick='libSetCat(${JSON.stringify(x)})'>${libEsc(x)}</button>`).join('');
+  document.getElementById('libFavBtn').textContent=libFav?'⭐ Favoritos':'☆ Favoritos';
+  let ef=document.getElementById('libEquipment'),cf=document.getElementById('libCollection'),ev=ef.value,cv=cf.value;
+  ef.innerHTML='<option value="">Todo el equipo</option>'+libUnique('equipment').map(x=>`<option ${x===ev?'selected':''}>${libEsc(x)}</option>`).join('');
+  cf.innerHTML='<option value="">Todas las colecciones</option>'+libUnique('collections').map(x=>`<option ${x===cv?'selected':''}>${libEsc(x)}</option>`).join('');
+  let q=(document.getElementById('libQ').value||'').toLowerCase();
+  let a=libItems.filter(x=>(libCat==='Todos'||x.category===libCat)&&(!libFav||x.favorite)&&(!ev||x.equipment===ev)&&(!cv||(x.collections||[]).includes(cv))&&(!q||[x.name,x.category,x.pattern,x.equipment,x.target,(x.collections||[]).join(' '),x.notes].join(' ').toLowerCase().includes(q)));
+  document.getElementById('libCount').textContent=a.length+' ejercicio'+(a.length===1?'':'s');
+  G.innerHTML=a.length?a.map(x=>`<article class="libCard"><button class="libStar" onclick="libStar('${x.id}')">${x.favorite?'⭐':'☆'}</button><div class="muted">${libEsc(x.category||'Sin categoría')}</div><h3>${libEsc(x.name||'Sin nombre')}</h3><div class="libTags">${x.pattern?`<span class="libTag">${libEsc(x.pattern)}</span>`:''}${x.equipment?`<span class="libTag">${libEsc(x.equipment)}</span>`:''}${x.target?`<span class="libTag terra">${libEsc(x.target)}</span>`:''}</div>${(x.collections||[]).length?`<div class="muted">📁 ${libEsc(x.collections.join(' · '))}</div>`:''}<div class="libActions"><button onclick="libShow('${x.id}')">Ver ficha</button><button class="soft" onclick="libOpenForm('${x.id}')">✏️ Editar</button>${x.video?`<a class="terra" style="padding:9px;border-radius:10px;text-decoration:none;text-align:center" target="_blank" href="${libEsc(x.video)}">▶ Video</a>`:''}</div></article>`).join(''):`<div class="empty"><b>No hay ejercicios aquí.</b><br><span class="muted">Agrega tu primer ejercicio o cambia los filtros.</span></div>`;
+}
+function libOpenForm(id=null){
+  libEdit=id;let x=libItems.find(i=>i.id===id)||{};
+  document.getElementById('libFT').textContent=id?'Editar ejercicio':'Nuevo ejercicio';
+  const map={libName:'name',libCategory:'category',libPattern:'pattern',libEquipmentField:'equipment',libTarget:'target',libVideo:'video',libNotes:'notes'};
+  Object.entries(map).forEach(([el,k])=>document.getElementById(el).value=x[k]||'');
+  document.getElementById('libCollections').value=(x.collections||[]).join(', ');
+  document.getElementById('libFormM').classList.add('show');
+}
+function libSave(){
+  let name=document.getElementById('libName').value.trim();if(!name)return alert('Escribe el nombre del ejercicio.');
+  let old=libItems.find(x=>x.id===libEdit);
+  let x={id:libEdit||'ex_'+Date.now(),name,category:document.getElementById('libCategory').value.trim(),pattern:document.getElementById('libPattern').value.trim(),equipment:document.getElementById('libEquipmentField').value.trim(),target:document.getElementById('libTarget').value.trim(),collections:document.getElementById('libCollections').value.split(',').map(v=>v.trim()).filter(Boolean),video:document.getElementById('libVideo').value.trim(),notes:document.getElementById('libNotes').value.trim(),favorite:old?.favorite||false};
+  libItems=libEdit?libItems.map(i=>i.id===libEdit?x:i):[x,...libItems];libPersist();libClose('libFormM');libRender();toast('Ejercicio guardado en la biblioteca');
+}
+function libStar(id){let x=libItems.find(i=>i.id===id);if(!x)return;x.favorite=!x.favorite;libPersist();libRender()}
+function libShow(id){
+  let x=libItems.find(i=>i.id===id);if(!x)return;
+  document.getElementById('libDetail').innerHTML=`<div class="muted">${libEsc(x.category||'')}</div><h2>${libEsc(x.name)}</h2><div class="libTags">${x.pattern?`<span class="libTag">${libEsc(x.pattern)}</span>`:''}${x.equipment?`<span class="libTag">${libEsc(x.equipment)}</span>`:''}${x.target?`<span class="libTag terra">${libEsc(x.target)}</span>`:''}</div>${(x.collections||[]).length?`<p><b>📁 Colecciones:</b> ${libEsc(x.collections.join(' · '))}</p>`:''}<h3>Indicaciones técnicas</h3><div style="white-space:pre-wrap">${libEsc(x.notes||'Sin indicaciones todavía.')}</div><div class="libSheetActions"><button onclick="libClose('libDetailM')">Cerrar</button><button class="soft" onclick="libClose('libDetailM');libOpenForm('${x.id}')">✏️ Editar</button>${x.video?`<a class="terra" style="padding:10px;border-radius:10px;text-decoration:none;text-align:center" target="_blank" href="${libEsc(x.video)}">▶ Video</a>`:''}<button class="danger" onclick="libDelete('${x.id}')">Eliminar</button></div>`;
+  document.getElementById('libDetailM').classList.add('show');
+}
+function libDelete(id){if(confirm('¿Eliminar este ejercicio?')){libItems=libItems.filter(x=>x.id!==id);libPersist();libClose('libDetailM');libRender()}}
+function libClose(id){document.getElementById(id).classList.remove('show')}
+function libBackup(){let b=new Blob([JSON.stringify({version:2,exported:new Date().toISOString(),items:libItems},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Biblioteca_Training_Luis_Quiros_respaldo.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function libRestore(file){if(!file)return;let r=new FileReader();r.onload=()=>{try{let j=JSON.parse(r.result),arr=Array.isArray(j)?j:j.items;if(!Array.isArray(arr))throw 0;if(confirm(`Importar ${arr.length} ejercicios? Esto reemplazará la biblioteca actual.`)){libItems=arr;libPersist();libRender();alert('Biblioteca importada.')}}catch(e){alert('Ese archivo no parece ser un respaldo válido.')}};r.readAsText(file);document.getElementById('libImportFile').value=''}
+libLoad();
+
 </script></body></html>
